@@ -44,14 +44,10 @@ a:hover {
 	<div
 		style="width: 100%; height: 100%; position: absolute; vertical-align: middle; horizontal-align: center; text-align: center;">
 		<form method="post" action="LoginHandler">
-			<label for="fname" style="font-family: tahoma; color: white">First
-				Name:</label> <input type="text" id="fname" name="fname" align="middle"></input><br>
-			<label for="lname" style="font-family: tahoma; color: white">Last
-				Name:</label> <input type="text" id="lname" name="lname"></input> <br></br>
 			<label for="email" style="font-family: tahoma; color: white">Email:</label>
-			<input type="text" id="email" name="email"></input><br> <label
+			<input type="text" id="email" name="email" required></input><br> <label
 				for="password" style="font-family: tahoma; color: white">Password:</label>
-			<input type="password" id="password" name="password"></input> <br>
+			<input type="password" id="password" name="password" required></input> <br>
 			
 			<input type="submit" value="Submit"></input><br>
 		</form>

@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class LoginHandler
@@ -49,20 +50,36 @@ public class LoginHandler extends HttpServlet {
 			//get user submitted information
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
-					
+			
 			//check if user already in database
 			try {
 				//create query
-				String sql = "SELECT UserID FROM Users WHERE email=? AND password=?";
+				String sql = "SELECT UserID FROM Users WHERE Email=? AND Password=?";
 				PreparedStatement stmt = conn.prepareStatement(sql);
+				
 				//set variables in query
 				stmt.setString(1, email);
 				stmt.setString(2, password);
-				//execute query
-				stmt.executeQuery(sql);
 				
-				response.sendRedirect("main.jsp");
+				//execute query
+				ResultSet rs = stmt.executeQuery();
+				
+				//move resultset pointer to the first record found with next()
+				//check if the user exists
+				if (rs.next()) {
+					//initialize session 
+					HttpSession sessionUser = request.getSession();
+					sessionUser.setAttribute("userID", rs.getInt("UserID"));
+					
+					conn.close();
+					response.sendRedirect("/Plannero/TaskHandler");
+				} else {
+					conn.close();
+					response.sendRedirect("failedLogin.jsp");
+				} 
+				
 			} catch (SQLException e){
+				e.printStackTrace();
 				response.sendRedirect("failedLogin.jsp");
 			}	
 		

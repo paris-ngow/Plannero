@@ -54,14 +54,13 @@ public class RegisterHandler extends HttpServlet {
 			String password = request.getParameter("password");
 			
 			int alreadyRegistered = userExists(conn, email, password);
-			System.out.println(alreadyRegistered);
 			if (alreadyRegistered == -1) {
 				//check if user already in database
 				try {
 					//create query
-					String sql = "INSERT INTO Users (FName, LName, email, password) " +
+					String sql = "INSERT INTO Users (FName, LName, Email, Password) " +
 							"SELECT * FROM (SELECT ?,?,?,?) AS tmp WHERE NOT EXISTS " +
-							"(SELECT UserID FROM Users WHERE email=? AND password=?)";
+							"(SELECT UserID FROM Users WHERE Email=? AND Password=?)";
 					PreparedStatement stmt = conn.prepareStatement(sql);
 					
 					//set variables in query
@@ -71,6 +70,7 @@ public class RegisterHandler extends HttpServlet {
 					stmt.setString(4, password);
 					stmt.setString(5, email);
 					stmt.setString(6, password);
+					
 					//execute query
 					stmt.executeUpdate();
 					conn.close();

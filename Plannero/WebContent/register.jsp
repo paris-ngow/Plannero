@@ -49,9 +49,9 @@ a:hover {
 			<label for="lname" style="font-family: tahoma; color: white">Last
 				Name:</label> <input type="text" id="lname" name="lname"></input> <br></br>
 			<label for="email" style="font-family: tahoma; color: white">Email:</label>
-			<input type="text" id="email" name="email"></input><br> <label
+			<input type="text" id="email" name="email" required></input><br> <label
 				for="password" style="font-family: tahoma; color: white">Password:</label>
-			<input type="password" id="password" name="password"></input> <br>
+			<input type="password" id="password" name="password" required></input> <br>
 			
 			<input type="submit" value="Submit"></input><br>
 		</form>
