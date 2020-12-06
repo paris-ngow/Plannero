@@ -6,6 +6,7 @@
 <meta charset="UTF-8">
 <title>Plannero</title>
 <style>
+/* login redirect link format */
 a:link, a:visited {
 	width: 50%;
 	border: none;
@@ -13,10 +14,12 @@ a:link, a:visited {
 	padding: 30px 30px;
 	text-align: middle;
 	font-family: tahoma;
-	color: white;
+	color: #435567;
 	padding: 10px 20px;
+	transition-duration: 0.4s;
 }
 
+/* hover login redirect link format */
 a:hover {
 	width: 50%;
 	border: none;
@@ -28,37 +31,90 @@ a:hover {
 	padding: 10px 20px;
 }
 
+/* format register form */
+.registerForm {
+	background-color: white;
+	width: 25%;
+	height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 1px 20px 20px 20px;
+	text-align: center;
+}
+
+/* format submit button */
+.button {
+	background-color: #435567;
+	border: none;
+	color: white;
+	padding: 8px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	transition-duration: 0.4s;
+}
+
+/* button hover */
+.button:hover {
+	background-color: #5c6e80;
+}
+
+/* format heading text */
+.headingTextStyle {
+	font-family: tahoma;
+	color: white;
+	text-align: center;
+	font-size: 50px;
+}
+
+/* format register heading text */
+.registerTextStyle {
+	font-family: tahoma;
+	color: #435567;
+	text-align: center;
+	font-size: 25px;
+}
+
+/* format body text */
+.bodyTextStyle {
+	font-family: tahoma;
+	color: #435567;
+	text-align: center;
+	font-size: 16px;
+}
 </style>
 </head>
 <body style="background-color: #435567">
-	<!-- title -->
-	<h1>
-		<p style="font-family: tahoma; color: white; text-align: center">Plannero</p>
-	</h1>
-	<!-- heading -->
-	<h2>
-		<p style="font-family: tahoma; color: white; text-align: center">Register</p>
-	</h2>
-	
-	<!-- register input form -->
-	<div
-		style="width: 100%; height: 100%; position: absolute; vertical-align: middle; horizontal-align: center; text-align: center;">
-		<form method="post" action="RegisterHandler">
-			<label for="fname" style="font-family: tahoma; color: white">First
-				Name:</label> <input type="text" id="fname" name="fname" align="middle"></input><br>
-			<label for="lname" style="font-family: tahoma; color: white">Last
-				Name:</label> <input type="text" id="lname" name="lname"></input> <br></br>
-			<label for="email" style="font-family: tahoma; color: white">Email:</label>
-			<input type="text" id="email" name="email" required></input><br> <label
-				for="password" style="font-family: tahoma; color: white">Password:</label>
-			<input type="password" id="password" name="password" required></input> <br>
-			
-			<input type="submit" value="Submit"></input><br>
-		</form>
-		<br>
+	<div>
+		<!-- title -->
+		<h1 class="headingTextStyle">Plannero</h1>
 
-		<a href="login.jsp">Already have an account? Log-in here.</a>
+		<!-- register input form -->
+		<div class="registerForm">
+			<!-- heading -->
+			<h2 class="registerTextStyle">Register</h2>
+
+			<!-- declare form block -->
+			<form method="post" action="RegisterHandler">
+
+				<!-- email input -->
+				<label class="bodyTextStyle" for="email">Email:</label> <input
+					type="email" id="email" name="email" size="26" required></input><br>
+
+				<!-- password input -->
+				<label class="bodyTextStyle" for="password">Password:</label> <input
+					type="password" id="password" name="password" size="22" required></input><br>
+
+				<!-- submit button -->
+				<input class="button" type="submit" value="Submit"></input><br>
+			</form>
+			<!-- redirect to login page -->
+			<br>
+			<a class="bodyTextStyle" href="login.jsp">Already have an
+				account?<br>Log-in here.
+			</a>
+		</div>
 	</div>
-
 </body>
 </html>
