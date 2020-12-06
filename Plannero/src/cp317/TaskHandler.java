@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class TaskHandler
+ * 
+ * @author Paris Ngow
+ * @version 1.0
+ * @since 2020-12-05
  */
 @WebServlet("/TaskHandler")
 public class TaskHandler extends HttpServlet {
@@ -30,18 +34,28 @@ public class TaskHandler extends HttpServlet {
 	}
 
 	/**
+	 * Implement get method for JSP requests.
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
+	 *      
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		//get user events
 		ArrayList<Event> tasks = retrieveTasks(request, response);
 		request.setAttribute("tasks", tasks);
 		
+		//get user tasks
 		ArrayList<Event> events = retrieveEvents(request,response);
 		request.setAttribute("events", events);
 
+		//forward request to the main page to update page with data
 		RequestDispatcher rd = request.getRequestDispatcher("main.jsp");
 		rd.forward(request, response);
 	}
@@ -49,6 +63,12 @@ public class TaskHandler extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
+	 *      
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -68,6 +88,15 @@ public class TaskHandler extends HttpServlet {
 
 	}
 
+	/**
+	 * Add task to the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void addTask(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -75,6 +104,7 @@ public class TaskHandler extends HttpServlet {
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
+			//redirect user to main page
 			response.sendRedirect("main.jsp");
 		} else {
 			// get user submitted information
@@ -96,14 +126,25 @@ public class TaskHandler extends HttpServlet {
 				stmt.executeUpdate();
 				conn.close();
 
+				//update main page
 				response.sendRedirect("/Plannero/TaskHandler");
-			} catch (SQLException e) {
+			} catch (SQLException e) {	//sql query error
 				e.printStackTrace();
+				//redirect user to main page
 				response.sendRedirect("main.jsp");
 			}
 		}
 	}
 
+	/**
+	 * Remove task from database
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void removeTask(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -111,6 +152,7 @@ public class TaskHandler extends HttpServlet {
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
+			//redirect user back to the main page
 			response.sendRedirect("main.jsp");
 		} else {
 			// get user submitted information
@@ -130,14 +172,27 @@ public class TaskHandler extends HttpServlet {
 				stmt.executeUpdate();
 				conn.close();
 
+				//update main page
 				response.sendRedirect("/Plannero/TaskHandler");
-			} catch (SQLException e) {
+			} catch (SQLException e) {	//sql query error
 				e.printStackTrace();
+				//redirect user back to the main page
 				response.sendRedirect("main.jsp");
 			}
 		}
 	}
 
+	/**
+	 * Returns arraylist of user tasks.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @return
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected ArrayList<Event> retrieveTasks(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -167,14 +222,16 @@ public class TaskHandler extends HttpServlet {
 
 				// collect all results, add to arraylist
 				while (rs.next()) {
+					//create task instance, initialize with data from database
 					Event task = new Event(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"));
 
+					//add task to arraylist
 					tasks.add(task);
 				}
 
 				conn.close();
 
-			} catch (SQLException e) {
+			} catch (SQLException e) {	//sql query error
 				e.printStackTrace();
 				return null;
 			}
@@ -185,6 +242,17 @@ public class TaskHandler extends HttpServlet {
 		return tasks;
 	}
 	
+	/**
+	 * Returns arraylist of user events.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @return
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected ArrayList<Event> retrieveEvents(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -214,20 +282,27 @@ public class TaskHandler extends HttpServlet {
 
 				// collect all results, add to arraylist
 				while (rs.next()) {
+					//create event instance, initialize with data from database
 					Event event = new Event(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"),
 							rs.getString("CourseID"));
 					
+					//check if date entered, add to instance
 					if (rs.getDate("EventDate") != null) {
 						event.setEventDate(rs.getDate("EventDate"));
 					}
+					
+					//check if description entered, add to instance
+					if (rs.getString("EventDescription") != null) {
+						event.setEventDescription(rs.getString("EventDescription"));
+					}
 
+					//add event to arraylist
 					events.add(event);
 				}
 
 				conn.close();
-			} catch (SQLException e) {
+			} catch (SQLException e) {	//sql query error
 				e.printStackTrace();
-				System.out.println("here6");
 				return null;
 			}
 

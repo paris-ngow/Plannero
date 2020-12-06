@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class RegisterHandler
+ * 
+ * @author Paris Ngow
+ * @version 1.0
+ * @since 2020-12-05
  */
 @WebServlet("/RegisterHandler")
 public class RegisterHandler extends HttpServlet {
@@ -29,47 +35,45 @@ public class RegisterHandler extends HttpServlet {
     }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
+	 * Implements post method for JSP request.
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//to output errors to users in jsp
+		PrintWriter out = response.getWriter();
 		//initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
-			response.sendRedirect("failedRegister.jsp");
+			out.println("<script type=\"text/javascript\">");
+			out.println("alert('Database connection not established.');");
+			out.println("location='register.jsp';");
+			out.println("</script>");
 		} else {
 			//get user submitted information
-			String fname = request.getParameter("fname");
-			String lname = request.getParameter("lname");
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
 			
-			int alreadyRegistered = userExists(conn, email, password);
+			//check if user already in database
+			int alreadyRegistered = userExists(conn, email);
 			if (alreadyRegistered == -1) {
-				//check if user already in database
 				try {
 					//create query
-					String sql = "INSERT INTO Users (FName, LName, Email, Password) " +
-							"SELECT * FROM (SELECT ?,?,?,?) AS tmp WHERE NOT EXISTS " +
-							"(SELECT UserID FROM Users WHERE Email=? AND Password=?)";
+					String sql = "INSERT INTO Users (Email, Password) " +
+							"VALUES (?,?)";
 					PreparedStatement stmt = conn.prepareStatement(sql);
 					
 					//set variables in query
-					stmt.setString(1, fname);
-					stmt.setString(2, lname);
-					stmt.setString(3, email);
-					stmt.setString(4, password);
-					stmt.setString(5, email);
-					stmt.setString(6, password);
+					stmt.setString(1, email);
+					stmt.setString(2, password);
 					
 					//execute query
 					stmt.executeUpdate();
@@ -78,21 +82,34 @@ public class RegisterHandler extends HttpServlet {
 					response.sendRedirect("successfulRegister.jsp");
 				} catch (SQLException e){
 					e.printStackTrace();
-					response.sendRedirect("failedRegister.jsp");
+					out.println("<script type=\"text/javascript\">");
+					out.println("alert('Error writing to database.');");
+					out.println("location='register.jsp';");
+					out.println("</script>");
 				}
 			} else {
-				response.sendRedirect("ExistingUserLogin.jsp");
+				out.println("<script type=\"text/javascript\">");
+				out.println("alert('Email already registered.');");
+				out.println("location='register.jsp';");
+				out.println("</script>");
 			}
 		}
 	}
 	
-	private int userExists(Connection conn, String email, String password) {
+	/**
+	 * Check database to see if user is already registered. Returns an integer > 0 if so, -1 if not.
+	 * 
+	 * @param conn, Connection
+	 * @param email, String
+	 * 
+	 * @return
+	 */
+	private int userExists(Connection conn, String email) {
 		try {
-			String sql ="SELECT UserID FROM Users WHERE email=? AND password=?";
+			String sql ="SELECT UserID FROM Users WHERE email=?";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
 			stmt.setString(1, email);
-			stmt.setString(2, password);
 			ResultSet rs = stmt.executeQuery();
 			
 			if (!rs.next()) {

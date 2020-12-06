@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class CourseHandler
+ * 
+ * @author Paris Ngow
+ * @version 1.0
+ * @since 2020-12-05
  */
 @WebServlet("/CourseHandler")
 public class CourseHandler extends HttpServlet {
@@ -31,21 +35,37 @@ public class CourseHandler extends HttpServlet {
 	}
 
 	/**
+	 * Implements get method for JSP requests.
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
+	 *      
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		ArrayList<Course> courses = retrieveCourses(request, response);
 		request.setAttribute("courses", courses);
 
-		RequestDispatcher rd = request.getRequestDispatcher("calendar.jsp");
+		RequestDispatcher rd = request.getRequestDispatcher("courseList.jsp");
 		rd.forward(request, response);
 	}
 
 	/**
+	 * Implements post method for JSP requests.
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
+	 *      
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -59,6 +79,15 @@ public class CourseHandler extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Adds a course to the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void addCourse(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -66,50 +95,119 @@ public class CourseHandler extends HttpServlet {
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
-			response.sendRedirect("calendar.jsp");
+			response.sendRedirect("courseList.jsp");
 		} else {
 			// get user submitted information
 			int userID = (int) request.getSession().getAttribute("userID");
 			String courseName = request.getParameter("cName");
 			String courseID = request.getParameter("cID");
+			String location = request.getParameter("cLocation");
+			String startTime = request.getParameter("cStart");
+			String endTime = request.getParameter("cEnd");
+			String daysOfWeek = convertDaysToString(request.getParameterValues("cDays"));
 
+			//check if course already exists for the user in the database
 			boolean alreadyEntered = courseExists(conn, userID, courseName, courseID);
+			
+			//course does not exist
 			if (!alreadyEntered) {
 				try {
 					// create query
-					String sql = "INSERT INTO Courses (UserID, CourseID, CourseName) VALUES (?,?,?)";
+					String sql = "INSERT INTO Courses (UserID, CourseID, CourseName, CourseLocation, CourseStart, CourseEnd, CourseDays) VALUES (?,?,?,?,?,?,?)";
 					PreparedStatement stmt = conn.prepareStatement(sql);
 
 					// set variables in query
 					stmt.setInt(1, userID);
 					stmt.setString(2, courseID);
 					stmt.setString(3, courseName);
+					stmt.setString(4, location);
+					stmt.setString(5, startTime);
+					stmt.setString(6, endTime);
+					stmt.setString(7, daysOfWeek);
 
 					// execute query
 					stmt.executeUpdate();
 					conn.close();
 
+					// redirect the user to the course list page
 					response.sendRedirect("/Plannero/CourseHandler");
-				} catch (SQLException e) {
+				} catch (SQLException e) {	//error in sql query
 					e.printStackTrace();
-					response.sendRedirect("calendar.jsp");
+					response.sendRedirect("courseList.jsp");
 				}
-			} else {
+			} else {	// course exists
 				response.sendRedirect("/Plannero/CourseHandler");
 			}
 		}
 	}
 
+	/**
+	 * Returns formatted string of days in the week to store in database.
+	 * 
+	 * @param daysOfWeek	String[]
+	 * 
+	 * @return formattedString
+	 */
+	private String convertDaysToString(String[] daysOfWeek) {
+		//initialize formatted string
+		String formattedString = "";
+
+		// iterate through the days submitted by the user
+		for (int i = 0; i < daysOfWeek.length; i++) {
+			// check which day & add to the formatted string 
+			switch (daysOfWeek[i]) {
+			case "Monday":
+				formattedString += "M";
+				break;
+			case "Tuesday":
+				formattedString += "T";
+				break;
+			case "Wednesday":
+				formattedString += "W";
+				break;
+			case "Thursday":
+				formattedString += "R";
+				break;
+			case "Friday":
+				formattedString += "F";
+				break;
+			default:
+				break;
+			}
+			
+			//if the current day is not the last that the user submitted, add a space to the formatted string
+			if (i != daysOfWeek.length - 1)
+				formattedString += " ";
+		}
+		
+		return formattedString;
+	}
+
+	/**
+	 * Check if course already exists in the database. Returns true or false.
+	 * 
+	 * @param conn, Connection
+	 * @param userID, int
+	 * @param name, String
+	 * @param courseID, String
+	 * 
+	 * @return 
+	 */
 	private boolean courseExists(Connection conn, int userID, String name, String courseID) {
 		try {
+			// create query
 			String sql = "SELECT * FROM Courses WHERE UserID=? AND CourseName=? AND courseID=?";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 
+			// set variables in query
 			stmt.setInt(1, userID);
 			stmt.setString(2, name);
 			stmt.setString(3, courseID);
+			
+			// execute query
 			ResultSet rs = stmt.executeQuery();
 
+			//check if query found a record
 			if (!rs.next()) {
 				return false;
 			} else {
@@ -123,6 +221,15 @@ public class CourseHandler extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Removes a course from the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void removeCourse(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -130,7 +237,7 @@ public class CourseHandler extends HttpServlet {
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
-			response.sendRedirect("calendar.jsp");
+			response.sendRedirect("courseList.jsp");
 		} else {
 			// get user submitted information
 			int userID = (int) request.getSession().getAttribute("userID");
@@ -148,15 +255,27 @@ public class CourseHandler extends HttpServlet {
 				// execute query
 				stmt.executeUpdate();
 				conn.close();
-
+				
+				//redirect the user to the course list page
 				response.sendRedirect("/Plannero/CourseHandler");
-			} catch (SQLException e) {
+			} catch (SQLException e) {	//sql query error
 				e.printStackTrace();
-				response.sendRedirect("calendar.jsp");
+				response.sendRedirect("courseList.jsp");
 			}
 		}
 	}
 
+	/**
+	 * Returns a list of courses the user previously submitted.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @return events
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected ArrayList<Course> retrieveCourses(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -184,7 +303,7 @@ public class CourseHandler extends HttpServlet {
 
 				// collect all results, add to arraylist
 				while (rs.next()) {
-					Course course = new Course(rs.getString("CourseID"), rs.getString("CourseName"), rs.getInt("ID"));
+					Course course = new Course(rs.getString("CourseID"), rs.getString("CourseName"), rs.getString("CourseLocation"), rs.getString("CourseStart"), rs.getString("CourseEnd"), rs.getString("CourseDays"), rs.getInt("ID"));
 
 					courses.add(course);
 				}

@@ -1,6 +1,7 @@
 package cp317;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,10 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class LoginHandler
+ * 
+ * @author Paris Ngow
+ * @version 1.0
+ * @since 2020-12-05
  */
 @WebServlet("/LoginHandler")
 public class LoginHandler extends HttpServlet {
@@ -29,23 +34,28 @@ public class LoginHandler extends HttpServlet {
     }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
+	 * Implement post method for JSP request.
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//to output errors to users in jsp
+		PrintWriter out = response.getWriter();
 		//initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 				
 		if (conn == null) {
-			response.sendRedirect("failedLogin.jsp");
+			out.println("<script type=\"text/javascript\">");
+			out.println("alert('Database connection not established.');");
+			out.println("location='login.jsp';");
+			out.println("</script>");
 		} else {
 			//get user submitted information
 			String email = request.getParameter("email");
@@ -73,14 +83,21 @@ public class LoginHandler extends HttpServlet {
 					
 					conn.close();
 					response.sendRedirect("/Plannero/TaskHandler");
-				} else {
+				} else {	//user doesn't exist
+					//output error to user
 					conn.close();
-					response.sendRedirect("failedLogin.jsp");
+					out.println("<script type=\"text/javascript\">");
+					out.println("alert('User not registered. Please register before logging in.');");
+					out.println("location='login.jsp';");
+					out.println("</script>");
 				} 
 				
-			} catch (SQLException e){
+			} catch (SQLException e){	//error in sql query
 				e.printStackTrace();
-				response.sendRedirect("failedLogin.jsp");
+				out.println("<script type=\"text/javascript\">");
+				out.println("alert('Error writing to database.');");
+				out.println("location='login.jsp';");
+				out.println("</script>");
 			}	
 		
 		}

@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class CoursePageHandler
+ * 
+ *  @author Paris Ngow
+ * @version 1.0
+ * @since 2020-12-05
  */
 @WebServlet("/CoursePageHandler")
 public class CoursePageHandler extends HttpServlet {
@@ -31,12 +35,19 @@ public class CoursePageHandler extends HttpServlet {
 	}
 
 	/**
+	 * Implements the get method for JSP requests.
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
+	 *      
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("get");
 		//check if program request has valid parameters to complete it
 		if (request.getSession().getAttribute("course") != null || request.getParameter("course") != null) {
 			//retrieve course to display
@@ -56,12 +67,19 @@ public class CoursePageHandler extends HttpServlet {
 	}
 
 	/**
+	 * Implements the post method for JSP requests.
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
+	 *      
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("post");
 		try {
 			//check if program request wants to add event
 			if (request.getParameter("add") != null) {
@@ -91,36 +109,35 @@ public class CoursePageHandler extends HttpServlet {
 			response.sendRedirect("course.jsp");
 		} else {
 			// get user submitted information
-			String eventName = request.getParameter("eName");
-			int userID = (int) request.getSession().getAttribute("userID");
-			String courseID = ((Course) request.getSession().getAttribute("course")).getCourseID();
-			java.sql.Date date = Date.valueOf(request.getParameter("date"));
-			String eventType = "C";
+			String eventName = request.getParameter("eName");	// name
+			String eventDescription = request.getParameter("eDescription");	// description
+			java.sql.Date date = Date.valueOf(request.getParameter("date"));	// date
+			int userID = (int) request.getSession().getAttribute("userID");		// user id
+			String courseID = ((Course) request.getSession().getAttribute("course")).getCourseID();	//course id
+			String eventType = "C";		// event type
 
 			try {
 				// create query
-				String sql = "INSERT INTO Events (UserID, EventName, EventDate, EventType, CourseID) VALUES (?,?,?,?,?)";
+				String sql = "INSERT INTO Events (UserID, EventName, EventDescription, EventDate, EventType, CourseID) VALUES (?,?,?,?,?,?)";
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
 				// set variables in query
 				stmt.setInt(1, userID);
 				stmt.setString(2, eventName);
-				stmt.setDate(3, date);
-				stmt.setString(4, eventType);
-				stmt.setString(5, courseID);
+				stmt.setString(3, eventDescription);
+				stmt.setDate(4, date);
+				stmt.setString(5, eventType);
+				stmt.setString(6, courseID);
 
 				// execute query
 				stmt.executeUpdate();
 				conn.close();
-
-				System.out.println("here1");
 
 				response.sendRedirect("/Plannero/CoursePageHandler");
 			} catch (IllegalArgumentException e) {
 				response.sendRedirect("course.jsp");
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("here2");
 				response.sendRedirect("course.jsp");
 			}
 		}
@@ -152,11 +169,9 @@ public class CoursePageHandler extends HttpServlet {
 				stmt.executeUpdate();
 				conn.close();
 
-				System.out.println("here3");
 				response.sendRedirect("/Plannero/CoursePageHandler");
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("here4");
 				response.sendRedirect("course.jsp");
 			}
 		}
@@ -198,17 +213,18 @@ public class CoursePageHandler extends HttpServlet {
 
 					if (rs.getDate("EventDate") != null) {
 						event.setEventDate(rs.getDate("EventDate"));
-						System.out.println(event.getEventDate());
+					}
+					
+					if (rs.getString("EventDescription") != null) {
+						event.setEventDescription(rs.getString("EventDescription"));
 					}
 
 					events.add(event);
 				}
 
 				conn.close();
-				System.out.println("here5");
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("here6");
 				return null;
 			}
 
@@ -250,11 +266,9 @@ public class CoursePageHandler extends HttpServlet {
 
 				//clear course from system memory
 				request.getSession().removeAttribute("course");
-				System.out.println("here9");
 				response.sendRedirect("/Plannero/CourseHandler");
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("here10");
 				response.sendRedirect("course.jsp");
 			}
 		}
@@ -294,7 +308,7 @@ public class CoursePageHandler extends HttpServlet {
 			int userID = (int) request.getSession().getAttribute("userID");
 
 			try {
-				try { // handle request from calendar page
+				try { // handle request from course list page
 					int courseID = Integer.parseInt(request.getParameter("course"));
 
 					// create query
@@ -311,13 +325,18 @@ public class CoursePageHandler extends HttpServlet {
 					// get course
 					while (rs.next()) {
 						// initialize course information
-						course = new Course(rs.getString("CourseID"), rs.getString("CourseName"), rs.getInt("ID"));
+						course = new Course(rs.getString("CourseID"), rs.getString("CourseName"), rs.getString("CourseLocation"), rs.getString("CourseStart"), rs.getString("CourseEnd"), rs.getString("CourseDays"), rs.getInt("ID"));
+						
+						//set syllabus to course instance if it exists
+						if (rs.getBlob("Syllabus") != null) {
+							course.setSyllabus(rs.getBlob("Syllabus"));
+						}
+						
 						// initialize course session attribute to manage page information
 						request.getSession().setAttribute("course", course);
 					}
 
 					conn.close();
-					System.out.println("here7");
 				} catch (NumberFormatException e) { // handle request from updating events
 					course = (Course) request.getSession().getAttribute("course");
 
@@ -334,13 +353,18 @@ public class CoursePageHandler extends HttpServlet {
 
 					// get course
 					while (rs.next()) {
-						course = new Course(rs.getString("CourseID"), rs.getString("CourseName"), rs.getInt("ID"));
+						course = new Course(rs.getString("CourseID"), rs.getString("CourseName"), rs.getString("CourseLocation"), rs.getString("CourseStart"), rs.getString("CourseEnd"), rs.getString("CourseDays"), rs.getInt("ID"));
+						
+						//set syllabus to course instance if it exists
+						if (rs.getBlob("Syllabus") != null) {
+							course.setSyllabus(rs.getBlob("Syllabus"));
+						}
+						
 						// initialize course session attribute to manage page information
 						request.getSession().setAttribute("course", course);
 					}
 
 					conn.close();
-					System.out.println("here8");
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
