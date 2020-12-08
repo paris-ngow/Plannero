@@ -20,22 +20,22 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/EventHandler")
 public class EventHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public EventHandler() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public EventHandler() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * Implement get method for JSP requests.
 	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
-	 *      
-	 * @param request, HttpServletRequest
+	 * 
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -43,24 +43,29 @@ public class EventHandler extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//get user events
-		ArrayList<Event> tasks = retrieveTasks(request, response);
-		request.setAttribute("tasks", tasks);
-		
-		//get user tasks
-		ArrayList<Event> events = retrieveEvents(request,response);
-		request.setAttribute("events", events);
+		// check if user session is running
+		if (request.getSession().getAttribute("userID") != null) {
+			// get user events
+			ArrayList<Event> tasks = retrieveTasks(request, response);
+			request.setAttribute("tasks", tasks);
 
-		//forward request to the main page to update page with data
-		RequestDispatcher rd = request.getRequestDispatcher("main.jsp");
-		rd.forward(request, response);
+			// get user tasks
+			ArrayList<Event> events = retrieveEvents(request, response);
+			request.setAttribute("events", events);
+
+			// forward request to the main page to update page with data
+			RequestDispatcher rd = request.getRequestDispatcher("main.jsp");
+			rd.forward(request, response);
+		} else { // no user session
+			response.sendRedirect("login.jsp");
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
-	 *      
-	 * @param request, HttpServletRequest
+	 * 
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -70,19 +75,19 @@ public class EventHandler extends HttpServlet {
 			throws ServletException, IOException {
 
 		try {
-			//check if user wants to add a task
+			// check if user wants to add a task
 			if (request.getParameter("add") != null) {
 				addTask(request, response);
-			
-			//check if user wants to delete a task
+
+				// check if user wants to delete a task
 			} else if (request.getParameter("delete") != null) {
-				//check if task list is not empty
+				// check if task list is not empty
 				if (!request.getParameter("event").isEmpty()) {
-				removeTask(request,response);
+					removeTask(request, response);
 				}
 			}
-		} catch (NullPointerException e) {	//invalid request
-			//redirect user back to main page with no changes
+		} catch (NullPointerException e) { // invalid request
+			// redirect user back to main page with no changes
 			response.sendRedirect("/Plannero/EventHandler");
 		}
 
@@ -91,7 +96,7 @@ public class EventHandler extends HttpServlet {
 	/**
 	 * Add task to the database.
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -104,7 +109,7 @@ public class EventHandler extends HttpServlet {
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
-			//redirect user to main page
+			// redirect user to main page
 			response.sendRedirect("main.jsp");
 		} else {
 			// get user submitted information
@@ -126,10 +131,10 @@ public class EventHandler extends HttpServlet {
 				stmt.executeUpdate();
 				conn.close();
 
-				//update main page
+				// update main page
 				response.sendRedirect("/Plannero/EventHandler");
-			} catch (SQLException e) {	//sql query error
-				//redirect user to main page
+			} catch (SQLException e) { // sql query error
+				// redirect user to main page
 				response.sendRedirect("main.jsp");
 			}
 		}
@@ -138,7 +143,7 @@ public class EventHandler extends HttpServlet {
 	/**
 	 * Remove task from database
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -151,13 +156,13 @@ public class EventHandler extends HttpServlet {
 		Connection conn = db.getConnection();
 
 		if (conn == null) {
-			//redirect user back to the main page
+			// redirect user back to the main page
 			response.sendRedirect("main.jsp");
 		} else {
 			// get user submitted information
 			int userID = (int) request.getSession().getAttribute("userID");
 			int taskID = Integer.parseInt(request.getParameter("task"));
-			
+
 			try {
 				// create query
 				String sql = "DELETE FROM Events WHERE UserID=? AND EventID=?";
@@ -171,10 +176,10 @@ public class EventHandler extends HttpServlet {
 				stmt.executeUpdate();
 				conn.close();
 
-				//update main page
+				// update main page
 				response.sendRedirect("/Plannero/EventHandler");
-			} catch (SQLException e) {	//sql query error
-				//redirect user back to the main page
+			} catch (SQLException e) { // sql query error
+				// redirect user back to the main page
 				response.sendRedirect("main.jsp");
 			}
 		}
@@ -183,7 +188,7 @@ public class EventHandler extends HttpServlet {
 	/**
 	 * Returns arraylist of user tasks.
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @return
@@ -220,17 +225,17 @@ public class EventHandler extends HttpServlet {
 
 				// collect all results, add to arraylist
 				while (rs.next()) {
-					//create task instance, initialize with data from database
+					// create task instance, initialize with data from database
 					Event task = new Event(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"));
 
-					//add task to arraylist
+					// add task to arraylist
 					tasks.add(task);
 				}
 
 				conn.close();
 
-			} catch (SQLException e) {	//sql query error
-				//return null (no tasks)
+			} catch (SQLException e) { // sql query error
+				// return null (no tasks)
 				return null;
 			}
 
@@ -239,11 +244,11 @@ public class EventHandler extends HttpServlet {
 		// return arraylist
 		return tasks;
 	}
-	
+
 	/**
 	 * Returns arraylist of user events.
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @return
@@ -280,26 +285,26 @@ public class EventHandler extends HttpServlet {
 
 				// collect all results, add to arraylist
 				while (rs.next()) {
-					//create event instance, initialize with data from database
+					// create event instance, initialize with data from database
 					Event event = new Event(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"),
 							rs.getString("CourseID"));
-					
-					//check if date entered, add to instance
+
+					// check if date entered, add to instance
 					if (rs.getDate("EventDate") != null) {
 						event.setEventDate(rs.getDate("EventDate"));
 					}
-					
-					//check if description entered, add to instance
+
+					// check if description entered, add to instance
 					if (rs.getString("EventDescription") != null) {
 						event.setEventDescription(rs.getString("EventDescription"));
 					}
 
-					//add event to arraylist
+					// add event to arraylist
 					events.add(event);
 				}
 
 				conn.close();
-			} catch (SQLException e) {	//sql query error
+			} catch (SQLException e) { // sql query error
 				// return null (no events)
 				return null;
 			}
