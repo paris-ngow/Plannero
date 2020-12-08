@@ -240,7 +240,7 @@
 				<h3 class="subheadingTextStyle">Add Event</h3>
 				
 				<!-- implement add event form -->
-				<form method="post" action="CoursePageHandler">
+				<form name="addEvent" method="post" action="CoursePageHandler">
 					<!-- name input -->
 					<label class="formTextStyle" for="eName">Name:</label> 
 					<input type="text" id="eName" name="eName" required></input><br> 
@@ -287,7 +287,7 @@
 					
 					<!-- submit button to delete event -->
 					<input class="eventButton" type="submit"
-						value="Delete Selected Task" name="deleteEvent"></input><br>
+						value="Delete Selected Event" name="deleteEvent"></input><br>
 
 				</form>
 			</div>

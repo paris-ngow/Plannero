@@ -12,8 +12,11 @@
  	* Validate course information submitted. 
  	*/
 	function validateAddCourse() {
-		//regex for alphanumeric text
-		const validText = /^[a-zA-Z0-9\-\s]+$/;
+		//regex for alphanumeric name
+		const validName = /^[a-zA-Z0-9&()#\-\s]+$/;
+		//regex for id
+		const validID = /^[a-zA-Z0-9\-\s]+$/;
+		
 		//course name
 		var name = document.forms["addCourse"]["cName"].value;
 		//course id
@@ -22,15 +25,19 @@
 		var start = document.forms["addCourse"]["cStart"].value;
 		//course end time
 		var end = document.forms["addCourse"]["cEnd"].value;
+		//course days
+		var daysOfWeek = document.getElementsByName("cDays");
+		// iterator to check day(s) selected
+		var days = 0;
 
 		//check if course name is alphanumeric
-		if (!name.match(validText)) {
-			alert("Only use alphanumeric characters for the course name.");
+		if (!name.match(validName)) {
+			alert("Only use alphanumeric characters (including (), &, #) for the course name.");
 			return false;
 		} 
 
 		//check if course id is alphanumeric
-		if (!id.match(validText)) {
+		if (!id.match(validID)) {
 			alert("Only use alphanumeric characters for the course ID.");
 			return false;
 		} else {
@@ -42,8 +49,20 @@
 		}
 		
 		//check if start time is before end time
-		if (start > end) {
+		if (start > end || start == end) {
 			alert("Start time should be before end time.");
+			return false;
+		} 
+		
+		//look through all checkboxes
+		for (var i = 0; i < checkboxs.length; i++) {
+			//see if a day is checked
+			if(daysOfWeek[i].checked) {
+				days++;
+			}
+		}
+		
+		if (days === 0) {
 			return false;
 		}
 		
@@ -189,7 +208,7 @@ fieldset {
 
 		<!-- back button -->
 		<div class="backButtonFormat">
-			<form action="/Plannero/TaskHandler">
+			<form action="/Plannero/EventHandler">
 				<input class="backButton" type="submit" value="Back" />
 			</form>
 		</div>

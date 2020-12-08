@@ -187,7 +187,7 @@
 
 				<!-- list of tasks in a form so the user can delete -->
 				<form class="taskForm" name="deleteTask" method="post"
-					action="/Plannero/TaskHandler"
+					action="/Plannero/EventHandler"
 					onsubmit="return validateDeleteTask()">
 					<!-- get events -->
 					<%
