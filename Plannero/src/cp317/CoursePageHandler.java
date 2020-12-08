@@ -94,7 +94,7 @@ public class CoursePageHandler extends HttpServlet {
 				// check if program request wants to delete event
 			} else if (request.getParameter("deleteEvent") != null) {
 				// check if event list is not empty
-				if (!request.getParameter("task").isEmpty()) {
+				if (!request.getParameter("event").isEmpty()) {
 					removeEvent(request, response);
 				}
 

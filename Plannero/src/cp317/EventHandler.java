@@ -46,7 +46,7 @@ public class EventHandler extends HttpServlet {
 		// check if user session is running
 		if (request.getSession().getAttribute("userID") != null) {
 			// get user events
-			ArrayList<Event> tasks = retrieveTasks(request, response);
+			ArrayList<Task> tasks = retrieveTasks(request, response);
 			request.setAttribute("tasks", tasks);
 
 			// get user tasks
@@ -82,7 +82,7 @@ public class EventHandler extends HttpServlet {
 				// check if user wants to delete a task
 			} else if (request.getParameter("delete") != null) {
 				// check if task list is not empty
-				if (!request.getParameter("event").isEmpty()) {
+				if (!request.getParameter("task").isEmpty()) {
 					removeTask(request, response);
 				}
 			}
@@ -113,7 +113,7 @@ public class EventHandler extends HttpServlet {
 			response.sendRedirect("main.jsp");
 		} else {
 			// get user submitted information
-			String name = request.getParameter("eName");
+			String name = request.getParameter("tName");
 			int userID = (int) request.getSession().getAttribute("userID");
 			String eventType = "T";
 
@@ -191,18 +191,18 @@ public class EventHandler extends HttpServlet {
 	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
-	 * @return
+	 * @return ArrayList<Task>
 	 * 
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected ArrayList<Event> retrieveTasks(HttpServletRequest request, HttpServletResponse response)
+	protected ArrayList<Task> retrieveTasks(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 		// create arraylist to store events to return
-		ArrayList<Event> tasks = new ArrayList<>();
+		ArrayList<Task> tasks = new ArrayList<>();
 
 		if (conn == null) {
 			return null;
@@ -226,7 +226,7 @@ public class EventHandler extends HttpServlet {
 				// collect all results, add to arraylist
 				while (rs.next()) {
 					// create task instance, initialize with data from database
-					Event task = new Event(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"));
+					Task task = new Task(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"));
 
 					// add task to arraylist
 					tasks.add(task);
