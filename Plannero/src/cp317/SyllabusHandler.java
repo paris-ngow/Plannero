@@ -94,7 +94,7 @@ public class SyllabusHandler extends HttpServlet {
 				output.flush();
 
 			} else { // syllabus not uploaded
-				// send alert of error to user
+				// outputs alert window to user
 				out.println("<script type=\"text/javascript\">");
 				out.println("alert('No syllabus file found. Please upload a file.');");
 				out.println("location='course.jsp';");
@@ -102,7 +102,6 @@ public class SyllabusHandler extends HttpServlet {
 				out.println("</script>");
 			}
 		} catch (SQLException e) {	//sql query error
-			e.printStackTrace();
 			//redirect the user to the course page
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		}
@@ -123,7 +122,8 @@ public class SyllabusHandler extends HttpServlet {
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {
+		if (conn == null) {	//no database connection established
+			//redirect user back to course page with no changes
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		} else {
 			// get session user
@@ -131,9 +131,10 @@ public class SyllabusHandler extends HttpServlet {
 			// get current session course
 			Course course = (Course) request.getSession().getAttribute("course");
 
-			// store input stream of file uploaded
+			// store input stream of file to be uploaded
 			InputStream inputStream = null;
-			// obtain upload file part of multipart request
+			
+			// obtain upload file part of multipart request from from
 			Part filePart = request.getPart("syllabus");
 			if (filePart != null) {
 				inputStream = filePart.getInputStream();
@@ -165,8 +166,7 @@ public class SyllabusHandler extends HttpServlet {
 				response.sendRedirect("/Plannero/SyllabusHandler");
 
 			} catch (SQLException e) {	//sql error
-				e.printStackTrace();
-				//redirect user to the course page
+				//redirect user to the course page with no changes
 				response.sendRedirect("/Plannero/CoursePageHandler");
 			}
 
@@ -188,7 +188,8 @@ public class SyllabusHandler extends HttpServlet {
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {
+		if (conn == null) {	//no database connection established
+			// redirect user to course page with no changes
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		} else {
 			// get session user
@@ -210,7 +211,7 @@ public class SyllabusHandler extends HttpServlet {
 
 				// move resultset pointer to the first record found with next()
 				// check if the query returned anything
-				if (rs.next()) {
+				if (rs.next()) {	// found syllabus
 					// retrieve blob of syllabus from database
 					Blob file = rs.getBlob("syllabus");
 					// set course instance syllabus to the blob
@@ -225,7 +226,6 @@ public class SyllabusHandler extends HttpServlet {
 				}
 
 			} catch (SQLException e) {	//sql query error
-				e.printStackTrace();
 				//redirect user to the course page
 				response.sendRedirect("/Plannero/CoursePageHandler");
 			}

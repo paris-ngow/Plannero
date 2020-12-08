@@ -24,14 +24,11 @@ public class DBManager {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Plannero", "root", "cp317");
 			
+			//return connection to database
 			return conn;
-		} catch (ClassNotFoundException e) {	//class error
-			e.printStackTrace();
-			
+		} catch (ClassNotFoundException e) { //class error
 			return null;
 		} catch (SQLException e) {	//sql query error
-			e.printStackTrace();
-			
 			return null;
 		}
 		

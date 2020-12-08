@@ -52,7 +52,8 @@ public class RegisterHandler extends HttpServlet {
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {
+		if (conn == null) { // no database connection established
+			// outputs alert window to user
 			out.println("<script type=\"text/javascript\">");
 			out.println("alert('Database connection not established.');");
 			out.println("location='register.jsp';");
@@ -64,7 +65,7 @@ public class RegisterHandler extends HttpServlet {
 			
 			//check if user already in database
 			int alreadyRegistered = userExists(conn, email);
-			if (alreadyRegistered == -1) {
+			if (alreadyRegistered == -1) {	// user not registered
 				try {
 					//create query
 					String sql = "INSERT INTO Users (Email, Password) " +
@@ -80,14 +81,15 @@ public class RegisterHandler extends HttpServlet {
 					conn.close();
 					
 					response.sendRedirect("successfulRegister.jsp");
-				} catch (SQLException e){
-					e.printStackTrace();
+				} catch (SQLException e){	// sql query error
+					// outputs alert window to user
 					out.println("<script type=\"text/javascript\">");
 					out.println("alert('Error writing to database.');");
 					out.println("location='register.jsp';");
 					out.println("</script>");
 				}
-			} else {
+			} else {	// user already registered
+				// outputs alert window to user
 				out.println("<script type=\"text/javascript\">");
 				out.println("alert('Email already registered.');");
 				out.println("location='register.jsp';");
@@ -102,25 +104,28 @@ public class RegisterHandler extends HttpServlet {
 	 * @param conn, Connection
 	 * @param email, String
 	 * 
-	 * @return
+	 * @return int
 	 */
 	private int userExists(Connection conn, String email) {
 		try {
+			//create query
 			String sql ="SELECT UserID FROM Users WHERE email=?";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
+			//set variables in query
 			stmt.setString(1, email);
 			ResultSet rs = stmt.executeQuery();
 			
+			// check if query returned any results
 			if (!rs.next()) {
+				// no matching entry found
 				return -1;
 			} else {
+				// return matching user id from database
 				return rs.getInt("UserID");
 			}
 			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (SQLException e) {	//sql query error
 			return -1;
 		}
 	}

@@ -10,14 +10,14 @@ import java.sql.Blob;
  *
  */
 public class Course {
-	private String courseID;
-	private String name;
-	private String location;
-	private String startTime;
-	private String endTime;
-	private String daysOfWeek;
-	private Blob syllabus;
-	private int sqlID;
+	private String courseID;	// unique identifier for the course
+	private String name;		// course name
+	private String location;	// location of course lectures
+	private String startTime;	// lecture start time
+	private String endTime;		// lecture end time
+	private String daysOfWeek;	// days of the week the lectures take place
+	private Blob syllabus;		// store syllabus file for the course
+	private int sqlID;			// unique id for sql record
 	
 	/**
 	 * Basic constructor for course 
@@ -27,8 +27,11 @@ public class Course {
 	 * @param sqlID
 	 */
 	public Course(String courseID, String name, int sqlID) {
+		// set course id
 		this.courseID = courseID;
+		// set course name
 		this.name = name;
+		// set sql id
 		this.sqlID = sqlID;
 	}
 	
@@ -44,13 +47,21 @@ public class Course {
 	 * @param sqlID
 	 */
 	public Course(String courseID, String name, String location, String startTime, String endTime, String daysOfWeek, int sqlID) {
+		// set course id
 		this.courseID = courseID;
+		// set course name
 		this.name = name;
+		// set course location
 		this.location = location;
+		// set course start time
 		this.startTime = startTime;
+		// set course end time
 		this.endTime = endTime;
+		// set days of the week course takes place on
 		this.daysOfWeek = daysOfWeek;
+		// set sql id
 		this.sqlID = sqlID;
+		// initialize syllabus to null (does not exist)
 		this.syllabus = null;
 	}
 	

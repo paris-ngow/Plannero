@@ -51,7 +51,8 @@ public class LoginHandler extends HttpServlet {
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 				
-		if (conn == null) {
+		if (conn == null) { // no database connection established
+			// outputs alert window to user
 			out.println("<script type=\"text/javascript\">");
 			out.println("alert('Database connection not established.');");
 			out.println("location='login.jsp';");
@@ -82,10 +83,10 @@ public class LoginHandler extends HttpServlet {
 					sessionUser.setAttribute("userID", rs.getInt("UserID"));
 					
 					conn.close();
-					response.sendRedirect("/Plannero/TaskHandler");
+					// admit user to main page of app
+					response.sendRedirect("/Plannero/EventHandler");
 				} else {	//user doesn't exist
-					//output error to user
-					conn.close();
+					// outputs alert window to user
 					out.println("<script type=\"text/javascript\">");
 					out.println("alert('User not registered. Please register before logging in.');");
 					out.println("location='login.jsp';");
@@ -93,7 +94,7 @@ public class LoginHandler extends HttpServlet {
 				} 
 				
 			} catch (SQLException e){	//error in sql query
-				e.printStackTrace();
+				// outputs alert window to user
 				out.println("<script type=\"text/javascript\">");
 				out.println("alert('Error writing to database.');");
 				out.println("location='login.jsp';");

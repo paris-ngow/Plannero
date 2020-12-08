@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class CoursePageHandler
  * 
- *  @author Paris Ngow
+ * @author Paris Ngow
  * @version 1.0
  * @since 2020-12-05
  */
@@ -61,7 +61,8 @@ public class CoursePageHandler extends HttpServlet {
 			// forward request to jsp page
 			RequestDispatcher rd = request.getRequestDispatcher("course.jsp");
 			rd.forward(request, response);
-		} else {
+		} else {	//no valid params
+			//redirect to course list page
 			response.sendRedirect("/Plannero/CourseHandler");
 		}
 	}
@@ -87,25 +88,37 @@ public class CoursePageHandler extends HttpServlet {
 				
 			//check if program request wants to delete event
 			} else if (request.getParameter("deleteEvent") != null) {
-				removeEvent(request, response);
-			
+				//check if event list is not empty
+				if (!request.getParameter("task").isEmpty()) {
+					removeEvent(request, response);
+				}
+				
 				//check if program request wants to delete course
 			} else if (request.getParameter("deleteCourse") != null) {
 				removeCourse(request, response);
 			}
-		} catch (NullPointerException e) {
-			e.printStackTrace();
+		} catch (NullPointerException e) { // could not find valid request
+			//redirect user back to specific course change with no changes
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		}
 	}
 
+	/**
+	 * Add event to database for the course.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void addEvent(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {
+		if (conn == null) {		// no database connection established
 			response.sendRedirect("course.jsp");
 		} else {
 			// get user submitted information
@@ -132,24 +145,34 @@ public class CoursePageHandler extends HttpServlet {
 				// execute query
 				stmt.executeUpdate();
 				conn.close();
-
+				
+				//redirect user to the specific course page update event
 				response.sendRedirect("/Plannero/CoursePageHandler");
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException e) {	//invalid argument
 				response.sendRedirect("course.jsp");
-			} catch (SQLException e) {
+			} catch (SQLException e) {	//sql query error
 				e.printStackTrace();
 				response.sendRedirect("course.jsp");
 			}
 		}
 	}
 
+	/**
+	 * Remove an event associated with the course from the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void removeEvent(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {
+		if (conn == null) {	// no database connection established
 			response.sendRedirect("course.jsp");
 		} else {
 			// get user submitted information
@@ -169,14 +192,26 @@ public class CoursePageHandler extends HttpServlet {
 				stmt.executeUpdate();
 				conn.close();
 
+				//redirect user to the specific course page update event
 				response.sendRedirect("/Plannero/CoursePageHandler");
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (SQLException e) {	//sql query error
+				//send user back to course page with no changes
 				response.sendRedirect("course.jsp");
 			}
 		}
 	}
 
+	/**
+	 * Retrieves a list of events associated with the specific course from the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @return ArrayList<Event>
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected ArrayList<Event> retrieveEvents(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -185,7 +220,7 @@ public class CoursePageHandler extends HttpServlet {
 		// create arraylist to store events to return
 		ArrayList<Event> events = new ArrayList<>();
 
-		if (conn == null) {
+		if (conn == null) { // no database connection established
 			return null;
 		} else {
 			// get session user
@@ -208,23 +243,27 @@ public class CoursePageHandler extends HttpServlet {
 
 				// collect all results, add to arraylist
 				while (rs.next()) {
+					//create new instance of event
 					Event event = new Event(rs.getInt("EventID"), rs.getString("EventName"), rs.getString("EventType"),
 							rs.getString("CourseID"));
 
+					// add event date to event instance if submitted by user
 					if (rs.getDate("EventDate") != null) {
 						event.setEventDate(rs.getDate("EventDate"));
 					}
 					
+					// add event description to event instance if submitted by user
 					if (rs.getString("EventDescription") != null) {
 						event.setEventDescription(rs.getString("EventDescription"));
 					}
 
+					// add event to arraylist
 					events.add(event);
 				}
 
 				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (SQLException e) {	//sql query error
+				//don't return an arraylist
 				return null;
 			}
 
@@ -234,13 +273,22 @@ public class CoursePageHandler extends HttpServlet {
 		return events;
 	}
 
+	/**
+	 * Remove the chosen course from the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void removeCourse(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {
+		if (conn == null) {	// no database connection established
 			response.sendRedirect("course.jsp");
 		} else {
 			// get user submitted information
@@ -267,13 +315,20 @@ public class CoursePageHandler extends HttpServlet {
 				//clear course from system memory
 				request.getSession().removeAttribute("course");
 				response.sendRedirect("/Plannero/CourseHandler");
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (SQLException e) {	//sql query error
+				//send user back to course page with no changes
 				response.sendRedirect("course.jsp");
 			}
 		}
 	}
 
+	/**
+	 * Removes all the events associated with the deleted course.
+	 * 
+	 * @param conn, Connection
+	 * @param userID, int
+	 * @param courseID, String
+	 */
 	private void removeEventsForCourse(Connection conn, int userID, String courseID) {
 		try {
 			// create query
@@ -287,12 +342,22 @@ public class CoursePageHandler extends HttpServlet {
 
 			// execute query
 			stmt.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (SQLException e) { // sql query error
+			
 		}
 	}
 
+	/**
+	 * Retrieve the course the user selected to view from the database.
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @return Course
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected Course getCourse(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// initialize database connection
@@ -301,7 +366,7 @@ public class CoursePageHandler extends HttpServlet {
 		// create arraylist to store events to return
 		Course course = null;
 
-		if (conn == null) {
+		if (conn == null) { //no database connection established
 			return null;
 		} else {
 			// get session user
@@ -366,8 +431,9 @@ public class CoursePageHandler extends HttpServlet {
 
 					conn.close();
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (SQLException e) {	//sql query error
+				//don't return a course
+				return null;
 			}
 
 			// return course
