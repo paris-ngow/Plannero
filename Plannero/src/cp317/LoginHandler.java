@@ -24,33 +24,35 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/LoginHandler")
 public class LoginHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public LoginHandler() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public LoginHandler() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * Implement post method for JSP request.
 	 * 
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//to output errors to users in jsp
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// to output errors to users in jsp
 		PrintWriter out = response.getWriter();
-		//initialize database connection
+		// initialize database connection
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
-				
+
 		if (conn == null) { // no database connection established
 			// outputs alert window to user
 			out.println("<script type=\"text/javascript\">");
@@ -58,49 +60,49 @@ public class LoginHandler extends HttpServlet {
 			out.println("location='login.jsp';");
 			out.println("</script>");
 		} else {
-			//get user submitted information
+			// get user submitted information
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
-			
-			//check if user already in database
+
+			// check if user already in database
 			try {
-				//create query
+				// create query
 				String sql = "SELECT UserID FROM Users WHERE Email=? AND Password=?";
 				PreparedStatement stmt = conn.prepareStatement(sql);
-				
-				//set variables in query
+
+				// set variables in query
 				stmt.setString(1, email);
 				stmt.setString(2, password);
-				
-				//execute query
+
+				// execute query
 				ResultSet rs = stmt.executeQuery();
-				
-				//move resultset pointer to the first record found with next()
-				//check if the user exists
+
+				// move resultset pointer to the first record found with next()
+				// check if the user exists
 				if (rs.next()) {
-					//initialize session 
+					// initialize session
 					HttpSession sessionUser = request.getSession();
 					sessionUser.setAttribute("userID", rs.getInt("UserID"));
-					
+
 					conn.close();
 					// admit user to main page of app
 					response.sendRedirect("/Plannero/EventHandler");
-				} else {	//user doesn't exist
+				} else { // user doesn't exist
 					// outputs alert window to user
 					out.println("<script type=\"text/javascript\">");
 					out.println("alert('User not registered. Please register before logging in.');");
 					out.println("location='login.jsp';");
 					out.println("</script>");
-				} 
-				
-			} catch (SQLException e){	//error in sql query
+				}
+
+			} catch (SQLException e) { // error in sql query
 				// outputs alert window to user
 				out.println("<script type=\"text/javascript\">");
 				out.println("alert('Error writing to database.');");
 				out.println("location='login.jsp';");
 				out.println("</script>");
-			}	
-		
+			}
+
 		}
 	}
 

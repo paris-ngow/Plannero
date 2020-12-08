@@ -45,8 +45,8 @@ public class SyllabusHandler extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
-	 *      
-	 * @param request, HttpServletRequest
+	 * 
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -61,8 +61,8 @@ public class SyllabusHandler extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
-	 *      
-	 * @param request, HttpServletRequest
+	 * 
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -80,7 +80,7 @@ public class SyllabusHandler extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		// get current session course
 		Course course = (Course) request.getSession().getAttribute("course");
-		
+
 		try {
 			if (course.getSyllabus() != null) { // syllabus uploaded
 				// retrieve syllabus file from course instance
@@ -101,16 +101,16 @@ public class SyllabusHandler extends HttpServlet {
 				out.println("close();");
 				out.println("</script>");
 			}
-		} catch (SQLException e) {	//sql query error
-			//redirect the user to the course page
+		} catch (SQLException e) { // sql query error
+			// redirect the user to the course page
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		}
 	}
 
 	/**
-	 * Uploads the syllabus to the current course. 
+	 * Uploads the syllabus to the current course.
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -118,12 +118,12 @@ public class SyllabusHandler extends HttpServlet {
 	 */
 	protected void uploadSyllabus(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//initialize connection to the database
+		// initialize connection to the database
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {	//no database connection established
-			//redirect user back to course page with no changes
+		if (conn == null) { // no database connection established
+			// redirect user back to course page with no changes
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		} else {
 			// get session user
@@ -133,7 +133,7 @@ public class SyllabusHandler extends HttpServlet {
 
 			// store input stream of file to be uploaded
 			InputStream inputStream = null;
-			
+
 			// obtain upload file part of multipart request from from
 			Part filePart = request.getPart("syllabus");
 			if (filePart != null) {
@@ -162,11 +162,11 @@ public class SyllabusHandler extends HttpServlet {
 				// retrieve the binary file from the database & set to the course instance
 				getSyllabus(request, response);
 
-				//redirect user to view the syllabus
+				// redirect user to view the syllabus
 				response.sendRedirect("/Plannero/SyllabusHandler");
 
-			} catch (SQLException e) {	//sql error
-				//redirect user to the course page with no changes
+			} catch (SQLException e) { // sql error
+				// redirect user to the course page with no changes
 				response.sendRedirect("/Plannero/CoursePageHandler");
 			}
 
@@ -174,9 +174,10 @@ public class SyllabusHandler extends HttpServlet {
 	}
 
 	/**
-	 * Retrieves syllabus from the database and displays it to teh user in another tab.
+	 * Retrieves syllabus from the database and displays it to teh user in another
+	 * tab.
 	 * 
-	 * @param request, HttpServletRequest
+	 * @param request,  HttpServletRequest
 	 * @param response, HttpServletResponse
 	 * 
 	 * @throws ServletException
@@ -188,7 +189,7 @@ public class SyllabusHandler extends HttpServlet {
 		DBManager db = new DBManager();
 		Connection conn = db.getConnection();
 
-		if (conn == null) {	//no database connection established
+		if (conn == null) { // no database connection established
 			// redirect user to course page with no changes
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		} else {
@@ -211,7 +212,7 @@ public class SyllabusHandler extends HttpServlet {
 
 				// move resultset pointer to the first record found with next()
 				// check if the query returned anything
-				if (rs.next()) {	// found syllabus
+				if (rs.next()) { // found syllabus
 					// retrieve blob of syllabus from database
 					Blob file = rs.getBlob("syllabus");
 					// set course instance syllabus to the blob
@@ -219,14 +220,14 @@ public class SyllabusHandler extends HttpServlet {
 					// close database connection
 					conn.close();
 
-				} else {	// syllabus not found
+				} else { // syllabus not found
 					conn.close();
-					//redirect user to the course page
+					// redirect user to the course page
 					response.sendRedirect("/Plannero/CoursePageHandler");
 				}
 
-			} catch (SQLException e) {	//sql query error
-				//redirect user to the course page
+			} catch (SQLException e) { // sql query error
+				// redirect user to the course page
 				response.sendRedirect("/Plannero/CoursePageHandler");
 			}
 		}

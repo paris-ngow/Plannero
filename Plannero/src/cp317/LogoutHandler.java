@@ -37,7 +37,8 @@ public class LogoutHandler extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// remove user from session
 		request.getSession().removeAttribute("userID");
 		// redirect user to login screen again

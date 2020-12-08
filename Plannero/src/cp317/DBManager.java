@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @since 2020-12-05
  */
 public class DBManager {
-	
+
 	/**
 	 * Establish connection to the database and return it.
 	 * 
@@ -20,17 +20,17 @@ public class DBManager {
 	 */
 	public Connection getConnection() {
 		try {
-			//set up connection
+			// set up connection
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Plannero", "root", "cp317");
-			
-			//return connection to database
+
+			// return connection to database
 			return conn;
-		} catch (ClassNotFoundException e) { //class error
+		} catch (ClassNotFoundException e) { // class error
 			return null;
-		} catch (SQLException e) {	//sql query error
+		} catch (SQLException e) { // sql query error
 			return null;
 		}
-		
+
 	}
 }
