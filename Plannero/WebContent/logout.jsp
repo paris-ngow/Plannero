@@ -94,9 +94,9 @@ a:hover {
 		<!-- heading -->
 		<h2 class="registerTextStyle">Log-in</h2>
 		
-		<!-- success message for register -->
-		<p style="font-family: tahoma; color: green; text-align: center">Register
-		Successful. <br>Log-in to access your account.</p>
+		<!--  success message for log out -->
+		<p style="font-family: tahoma; color: green; text-align: center">Log-out
+		Successful.</p>
 	
 		<!-- declare form block -->
 		<form name="loginForm" method="post" action="LoginHandler">

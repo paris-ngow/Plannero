@@ -166,6 +166,29 @@ fieldset {
 	background-color: #5c6e80;
 }
 
+/* format logout button position*/
+.logoutButtonFormat {
+	text-align: right;
+}
+
+/* format button to logout of session  */
+.logoutButton {
+	background-color: #white;
+	border: none;
+	color: #435567;
+	padding: 8px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	transition-duration: 0.4s;
+}
+
+/* logout button hover */
+.logoutButton:hover {
+	background-color: #DFDFDF;
+}
+
 /* format heading text */
 .headingTextStyle {
 	font-family: tahoma;
@@ -203,6 +226,13 @@ fieldset {
 </head>
 <body style="background-color: #435567">
 	<div>
+		<!-- View courses button -->
+		<div class="logoutButtonFormat">
+			<form action="/Plannero/LogoutHandler">
+				<input class="logoutButton" type="submit" value="Logout" />
+			</form>
+		</div>
+	
 		<!-- title heading -->
 		<h1 class="headingTextStyle">Plannero</h1>
 
