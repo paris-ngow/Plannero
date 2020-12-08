@@ -1,6 +1,7 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Collections"%>
 <%@ page import="cp317.Event"%>
+<%@ page import="cp317.Task"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -156,12 +157,9 @@
 	background-color: #DFDFDF;
 }
 
-/* format heading text */
-.headingTextStyle {
-	font-family: tahoma;
-	color: white;
+/* format heading */
+.headingFormat {
 	text-align: center;
-	font-size: 50px;
 }
 
 /* format sub heading text */
@@ -196,10 +194,13 @@
 				<input class="logoutButton" type="submit" value="Logout" />
 			</form>
 		</div>
-	
-		<!-- Plannero header -->
-		<h1 class="headingTextStyle">Plannero</h1>
 
+		<!-- title -->
+		<div class="headingFormat">
+			<img src="/Plannero/logos/sideLogo.png" alt="Plannero"
+				style="width: 241.125px; height: 55.625px; font-family: tahoma; color: white; font-size: 50px; padding: 20px;">
+		</div>
+		
 		<!-- View courses button -->
 		<div class="viewCourseButtonFormat">
 			<form action="/Plannero/CourseHandler">
@@ -221,14 +222,14 @@
 					onsubmit="return validateDeleteTask()">
 					<!-- get events -->
 					<%
-						ArrayList<Event> tasks = (ArrayList<Event>) request.getAttribute("tasks");
+						ArrayList<Task> tasks = (ArrayList<Task>) request.getAttribute("tasks");
 
 					if (tasks != null) {
-						for (Event task : tasks) {
+						for (Task task : tasks) {
 					%>
-					<input type="radio" id=<%=task.getEventID()%> name="task"
-						value=<%=task.getEventID()%> required> <label
-						class="bodyTextStyle" for=<%=task.getEventID()%>><%=task.getEventName()%></label><br>
+					<input type="radio" id=<%=task.getID()%> name="task"
+						value=<%=task.getID()%> required> <label
+						class="bodyTextStyle" for=<%=task.getID()%>><%=task.getName()%></label><br>
 					<%
 						}
 					}
@@ -249,12 +250,13 @@
 				<h3 class="taskFormText">Add Task</h3>
 
 				<!-- implement form to add a task -->
-				<form name="addTask" method="post" action="TaskHandler"
+				<form name="addTask" method="post" action="EventHandler"
 					onsubmit="return validateAddTask()">
 
 					<!-- task name input -->
-					<label for="eName" style="font-family: tahoma; color: white">Event
-						Name:</label> <input type="text" id="eName" name="eName" required></input>
+					<label for="tName" style="font-family: tahoma; color: white">Task
+						Name:</label> <input type="text" id="tName" name="tName" required></input>
+					<br>
 
 					<!-- submit request to add task to the database -->
 					<input class="addTaskButton" type="submit" value="Add" name="add"></input><br>
@@ -284,21 +286,15 @@
 					for (Event event : events) {
 
 						//check if number of events is greater than 5 (will only show 5 or less)
-						if (numEvents > 5) {
-					break;
-						} else {
-					numEvents++;
-						}
-
 						//check if event date is after today's date.. want to show upcoming events
-						if (event.getEventDate().after(now)) {
+						if (numEvents < 5 && event.getEventDate().after(now)) {
 				%>
 
 				<!-- output event name -->
 				<p class="bodyTextStyle">
 					<b><i><%=event.getEventName()%></i></b>
 				</p>
-				
+
 				<!-- output event description if the event has one -->
 				<%
 					if (event.getEventDescription() != null) {
@@ -309,7 +305,7 @@
 				<%
 					}
 				%>
-				
+
 				<!-- output course event is associated with -->
 				<p class="bodyTextStyle"><%="Course ID: " + event.getCourseID()%></p>
 				<!-- output date event will take place -->
@@ -317,7 +313,11 @@
 				<br>
 
 				<%
-					}
+					// increase number of events added
+				numEvents++;
+				} else if (numEvents == 5) { //more than 5 events available
+				break;
+				}
 				}
 				}
 				%>

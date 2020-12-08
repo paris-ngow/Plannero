@@ -189,12 +189,9 @@ fieldset {
 	background-color: #DFDFDF;
 }
 
-/* format heading text */
-.headingTextStyle {
-	font-family: tahoma;
-	color: white;
+/* format heading */
+.headingFormat {
 	text-align: center;
-	font-size: 50px;
 }
 
 /* format heading text */
@@ -233,8 +230,11 @@ fieldset {
 			</form>
 		</div>
 	
-		<!-- title heading -->
-		<h1 class="headingTextStyle">Plannero</h1>
+		<!-- title -->
+		<div class="headingFormat">
+			<img src="/Plannero/logos/sideLogo.png" alt="Plannero"
+				style="width: 241.125px; height: 55.625px; font-family: tahoma; color: white; font-size: 50px; padding: 20px;">
+		</div>
 
 		<!-- back button -->
 		<div class="backButtonFormat">

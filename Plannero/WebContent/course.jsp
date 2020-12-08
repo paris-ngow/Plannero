@@ -1,4 +1,5 @@
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Collections"%>
 <%@ page import="cp317.Course"%>
 <%@ page import="cp317.Event"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -86,7 +87,9 @@
 .eventList {
 	background-color: white;
 	padding-top: 10px;
-	padding-bottom: 20px; text-align : center; color : white;
+	padding-bottom: 20px;
+	text-align: center;
+	color: white;
 	font-family: tahoma;
 	color: white;
 	text-align: center
@@ -142,12 +145,9 @@
 	background-color: #DFDFDF;
 }
 
-/* format heading text */
-.headingTextStyle {
-	font-family: tahoma;
-	color: white;
+/* format heading */
+.headingFormat {
 	text-align: center;
-	font-size: 50px;
 }
 
 /* format heading text */
@@ -193,9 +193,12 @@
 				<input class="logoutButton" type="submit" value="Logout" />
 			</form>
 		</div>
-	
-		<!-- heading -->
-		<h1 class="headingTextStyle">Plannero</h1>
+
+		<!-- title -->
+		<div class="headingFormat">
+			<img src="/Plannero/logos/sideLogo.png" alt="Plannero"
+				style="width: 241.125px; height: 55.625px; font-family: tahoma; color: white; font-size: 50px; padding: 20px;">
+		</div>
 
 		<!-- back button -->
 		<div class="split left" style="text-align: center">
@@ -260,29 +263,30 @@
 
 			</div>
 		</div>
-		
+
 		<!-- container for event information for the course -->
 		<div class="split right">
 			<!-- format add event form -->
 			<div class="addEvent">
-				
+
 				<!-- heading for add event form -->
 				<h3 class="subheadingTextStyle">Add Event</h3>
-				
+
 				<!-- implement add event form -->
 				<form name="addEvent" method="post" action="CoursePageHandler">
 					<!-- name input -->
-					<label class="formTextStyle" for="eName">Name:</label> 
-					<input type="text" id="eName" name="eName" required></input><br> 
-					
+					<label class="formTextStyle" for="eName">Name:</label> <input
+						type="text" id="eName" name="eName" required></input><br>
+
 					<!-- description input -->
-					<label class="formTextStyle" for="eDescription">Description:</label> 
-					<input type="text" id="eDescription" name="eDescription" maxlength="50"></input><br>
-					
+					<label class="formTextStyle" for="eDescription">Description:</label>
+					<input type="text" id="eDescription" name="eDescription"
+						maxlength="50"></input><br>
+
 					<!-- date input -->
-					<label class="formTextStyle" for="date">Date: </label> 
-					<input type="date" id="date" name="date" required></input><br> 
-					
+					<label class="formTextStyle" for="date">Date: </label> <input
+						type="date" id="date" name="date" required></input><br>
+
 					<!-- submit button -->
 					<input class="eventButton" type="submit" value="Add" name="add"></input><br>
 				</form>
@@ -295,17 +299,24 @@
 			<div class="eventList">
 				<!-- heading for course events list -->
 				<h3 class="subheadingTextStyle">Course Events</h3>
-				
+
 				<!-- display list of events for the course in form so user can delete -->
 				<form method="post" action="/Plannero/CoursePageHandler">
-					
+
 					<!-- get events -->
 					<%
 						ArrayList<Event> events = (ArrayList<Event>) request.getAttribute("events");
+
+					// sort events by date
+					Collections.sort(events);
+
+					//get today's date
+					java.util.Date now = new java.util.Date();
+
 					if (events != null) {
 						for (Event event : events) {
 					%>
-					
+
 					<!-- display specific event -->
 					<input type="radio" id=<%=event.getEventID()%> name="event"
 						value=<%=event.getEventID()%> required> <label
@@ -314,7 +325,7 @@
 						}
 					}
 					%>
-					
+
 					<!-- submit button to delete event -->
 					<input class="eventButton" type="submit"
 						value="Delete Selected Event" name="deleteEvent"></input><br>

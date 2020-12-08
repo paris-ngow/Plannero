@@ -60,12 +60,9 @@ a:hover {
 	background-color: #5c6e80;
 }
 
-/* format heading text */
-.headingTextStyle {
-	font-family: tahoma;
-	color: white;
+/* format heading */
+.headingFormat {
 	text-align: center;
-	font-size: 50px;
 }
 
 /* format register heading text */
@@ -87,30 +84,35 @@ a:hover {
 </head>
 <body style="background-color: #435567">
 	<!-- title -->
-	<h1 class="headingTextStyle">Plannero</h1>
+	<div class="headingFormat">
+		<img src="/Plannero/logos/topLogo.png" alt="Plannero"
+			style="width: 250px; height: 178.5px;font-family: tahoma; color: white; font-size: 50px; padding:20px;">
+	</div>
 
 	<!-- login input form -->
 	<div class="loginForm">
 		<!-- heading -->
 		<h2 class="registerTextStyle">Log-in</h2>
-	
+
 		<!-- declare form block -->
 		<form name="loginForm" method="post" action="LoginHandler">
 
 			<!-- email input -->
-			<label class="bodyTextStyle" for="email" >Email:</label>
-			<input type="email" id="email" name="email" size="24" required></input><br>
+			<label class="bodyTextStyle" for="email">Email:</label> <input
+				type="email" id="email" name="email" size="24" required></input><br>
 
 			<!-- password input -->
-			<label class="bodyTextStyle" for="password">Password:</label>
-			<input type="password" id="password" name="password" required></input>
+			<label class="bodyTextStyle" for="password">Password:</label> <input
+				type="password" id="password" name="password" required></input>
 
 			<!-- submit button -->
 			<br> <input class="button" type="submit" value="Submit"></input><br>
 		</form>
 
 		<!-- navigate to register -->
-		<br> <a href="register.jsp">Don't have an account?<br>Register here.</a>
+		<br> <a href="register.jsp">Don't have an account?<br>Register
+			here.
+		</a>
 	</div>
 
 </body>

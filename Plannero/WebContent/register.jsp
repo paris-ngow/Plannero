@@ -60,12 +60,9 @@ a:hover {
 	background-color: #5c6e80;
 }
 
-/* format heading text */
-.headingTextStyle {
-	font-family: tahoma;
-	color: white;
+/* format heading */
+.headingFormat {
 	text-align: center;
-	font-size: 50px;
 }
 
 /* format register heading text */
@@ -88,7 +85,10 @@ a:hover {
 <body style="background-color: #435567">
 	<div>
 		<!-- title -->
-		<h1 class="headingTextStyle">Plannero</h1>
+		<div class="headingFormat">
+			<img src="/Plannero/logos/topLogo.png" alt="Plannero"
+				style="width: 250px; height: 178.5px; font-family: tahoma; color: white; font-size: 50px; padding: 20px;">
+		</div>
 
 		<!-- register input form -->
 		<div class="registerForm">
@@ -110,9 +110,8 @@ a:hover {
 				<input class="button" type="submit" value="Submit"></input><br>
 			</form>
 			<!-- redirect to login page -->
-			<br>
-			<a class="bodyTextStyle" href="login.jsp">Already have an
-				account?<br>Log-in here.
+			<br> <a class="bodyTextStyle" href="login.jsp">Already have
+				an account?<br>Log-in here.
 			</a>
 		</div>
 	</div>
