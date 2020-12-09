@@ -5,6 +5,23 @@
 <head>
 <meta charset="UTF-8">
 <title>Plannero</title>
+<script>
+	/**
+	 * Validate course information submitted. 
+	 */
+	function validateRequest() {
+		//password
+		var password = document.forms["register"]["password"].value;
+
+		//check if password is at least 8 characters
+		if (password.length < 8) {
+			alert("Password must be at least 8 characters!");
+			return false;
+		}
+
+		return true;
+	}
+</script>
 <style>
 /* login redirect link format */
 a:link, a:visited {
@@ -96,7 +113,8 @@ a:hover {
 			<h2 class="registerTextStyle">Register</h2>
 
 			<!-- declare form block -->
-			<form method="post" action="RegisterHandler">
+			<form name="register" method="post" action="RegisterHandler"
+				onsubmit="return validateRequest()">
 
 				<!-- email input -->
 				<label class="bodyTextStyle" for="email">Email:</label> <input

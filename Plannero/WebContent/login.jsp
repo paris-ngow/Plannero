@@ -5,6 +5,23 @@
 <head>
 <meta charset="UTF-8">
 <title>Plannero</title>
+<script>
+	/**
+	 * Validate course information submitted. 
+	 */
+	function validateRequest() {
+		//password
+		var password = document.forms["login"]["password"].value;
+
+		//check if password is at least 8 characters
+		if (password.length < 8) {
+			alert("Password must be at least 8 characters!");
+			return false;
+		}
+
+		return true;
+	}
+</script>
 <style>
 /* register redirect link format */
 a:link, a:visited {
@@ -86,7 +103,7 @@ a:hover {
 	<!-- title -->
 	<div class="headingFormat">
 		<img src="/Plannero/logos/topLogo.png" alt="Plannero"
-			style="width: 250px; height: 178.5px;font-family: tahoma; color: white; font-size: 50px; padding:20px;">
+			style="width: 250px; height: 178.5px; font-family: tahoma; color: white; font-size: 50px; padding: 20px;">
 	</div>
 
 	<!-- login input form -->
@@ -95,7 +112,7 @@ a:hover {
 		<h2 class="registerTextStyle">Log-in</h2>
 
 		<!-- declare form block -->
-		<form name="loginForm" method="post" action="LoginHandler">
+		<form name="login" method="post" action="LoginHandler" onsubmit="return validateRequest()">
 
 			<!-- email input -->
 			<label class="bodyTextStyle" for="email">Email:</label> <input
