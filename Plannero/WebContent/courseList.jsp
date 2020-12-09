@@ -55,14 +55,15 @@
 		} 
 		
 		//look through all checkboxes
-		for (var i = 0; i < checkboxs.length; i++) {
+		for (var i = 0; i < daysOfWeek.length; i++) {
 			//see if a day is checked
 			if(daysOfWeek[i].checked) {
 				days++;
 			}
 		}
 		
-		if (days === 0) {
+		if (days == 0) {
+			alert("Please select at least one day the course will take place on.");
 			return false;
 		}
 		
