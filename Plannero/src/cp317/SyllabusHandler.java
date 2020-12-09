@@ -43,6 +43,8 @@ public class SyllabusHandler extends HttpServlet {
 	}
 
 	/**
+	 * Implements get method for JSP request.
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 * 
@@ -59,6 +61,8 @@ public class SyllabusHandler extends HttpServlet {
 	}
 
 	/**
+	 * Implements post method for JSP request.
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 * 
@@ -74,10 +78,17 @@ public class SyllabusHandler extends HttpServlet {
 		uploadSyllabus(request, response);
 	}
 
+	/**
+	 * Displays syllabus for the user on another page
+	 * 
+	 * @param request, HttpServletRequest
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void viewSyllabus(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// to print error to user
-		PrintWriter out = response.getWriter();
 		// get current session course
 		Course course = (Course) request.getSession().getAttribute("course");
 
@@ -94,17 +105,31 @@ public class SyllabusHandler extends HttpServlet {
 				output.flush();
 
 			} else { // syllabus not uploaded
-				// outputs alert window to user
-				out.println("<script type=\"text/javascript\">");
-				out.println("alert('No syllabus file found. Please upload a file.');");
-				out.println("location='course.jsp';");
-				out.println("close();");
-				out.println("</script>");
+				printViewSyllabusError(response);
 			}
 		} catch (SQLException e) { // sql query error
 			// redirect the user to the course page
 			response.sendRedirect("/Plannero/CoursePageHandler");
 		}
+	}
+
+	/**
+	 * Print error for view syllabus function.
+	 * 
+	 * @param response, HttpServletResponse
+	 * 
+	 * @throws IOException
+	 */
+	private void printViewSyllabusError(HttpServletResponse response) throws IOException {
+		// to print error to user
+		PrintWriter out = response.getWriter();
+
+		// outputs alert window to user
+		out.println("<script type=\"text/javascript\">");
+		out.println("alert('No syllabus file found. Please upload a file.');");
+		out.println("location='course.jsp';");
+		out.println("close();");
+		out.println("</script>");
 	}
 
 	/**
